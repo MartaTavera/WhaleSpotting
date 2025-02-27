@@ -9,6 +9,21 @@ using WhaleSpotting.Models.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add this right after the builder is created
+//var builder = WebApplication.CreateBuilder(args);
+
+// Debug: Check if any connection string exists
+Console.WriteLine($"Connection string exists: {builder.Configuration.GetConnectionString("Postgres") != null}");
+if (builder.Configuration.GetConnectionString("Postgres") != null)
+{
+    Console.WriteLine($"Connection string value: {builder.Configuration.GetConnectionString("Postgres")}");
+}
+
+// Debug: Check if environment variables exist
+Console.WriteLine($"DB_HOST_KEY exists: {builder.Configuration["DB_HOST_KEY"] != null}");
+Console.WriteLine($"DB_USERNAME_KEY exists: {builder.Configuration["DB_USERNAME_KEY"] != null}");
+Console.WriteLine($"DB_PASSWORD_KEY exists: {builder.Configuration["DB_PASSWORD_KEY"] != null}");
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -26,7 +41,24 @@ builder
 
 builder.Services.AddDbContext<WhaleSpottingContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
+    var connectionTemplate = builder.Configuration.GetConnectionString("Postgres");
+    if (string.IsNullOrEmpty(connectionTemplate))
+    {
+        throw new InvalidOperationException("Connection string 'Postgres' is missing or empty in configuration");
+    }
+
+    // Format with values from configuration
+    var formattedConnectionString = string.Format(
+        System.Globalization.CultureInfo.InvariantCulture,
+        connectionTemplate,
+        builder.Configuration["DB_HOST_KEY"],
+        builder.Configuration["DB_USERNAME_KEY"],
+        builder.Configuration["DB_PASSWORD_KEY"]
+    );
+
+    Console.WriteLine($"Formatted connection string: {formattedConnectionString}");
+
+    options.UseNpgsql(formattedConnectionString);
 });
 
 builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<WhaleSpottingContext>();

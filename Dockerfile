@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /WhaleSpotting
 
-# Copy everything first
+# Copy everything first in folder
 COPY . .
 
 # Navigate to backend and build

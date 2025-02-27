@@ -9,8 +9,7 @@ using WhaleSpotting.Models.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add this right after the builder is created
-//var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("/etc/secrets/secrets.json", optional: true, reloadOnChange: true);
 
 // Debug: Check if any connection string exists
 Console.WriteLine($"Connection string exists: {builder.Configuration.GetConnectionString("Postgres") != null}");

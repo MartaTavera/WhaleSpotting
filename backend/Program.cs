@@ -19,6 +19,8 @@ if (builder.Configuration.GetConnectionString("Postgres") != null)
     Console.WriteLine($"Connection string value: {builder.Configuration.GetConnectionString("Postgres")}");
 }
 
+builder.Configuration.AddEnvironmentVariables();
+
 // Debug: Check if environment variables exist
 Console.WriteLine($"DB_HOST_KEY exists: {builder.Configuration["DB_HOST_KEY"] != null}");
 Console.WriteLine($"DB_USERNAME_KEY exists: {builder.Configuration["DB_USERNAME_KEY"] != null}");
